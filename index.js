@@ -1,67 +1,93 @@
 
-const getOdds = document.querySelector('.get-data');
+const getDraftkings = document.querySelector('.get-draftkings');
+const getFanduel = document.querySelector('.get-fanduel');
+const getBetMgm = document.querySelector('.get-betmgm');
+const infoCard = document.querySelector('.info-card');
+const cardRemove = document.querySelector('.card-content');
 
-function draftKingsMoneyline(){
-        fetch('https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=2c3c60cbc33c97516e90a8154130f426&regions=us&markets=h2h&bookmakers=draftkings')
+//get home team
+function createCard(bookmaker){
+        fetch(`https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=6f537a177ac342ff6c5350ede4e9f7af&regions=us&markets=h2h&bookmakers=${bookmaker}`)
         .then((res) => res.json())
-        .then((data) => console.log(data))
+        .then((data) => {
+            console.log(data)
+            //get home team names
+            for(let i = 0; i < data.length; i++){
+                let bkMakerTitle = data[i].bookmakers[0].title;
+                let homeTeam = data[i].home_team;
+                let awayTeam = data[i].away_team
+                let homeOdds = data[i].bookmakers[0].markets[0].outcomes[0].price;
+                let awayOdds = data[i].bookmakers[0].markets[0].outcomes[1].price;
+                // convert decimal odds to american odds
+                if(homeOdds > 2.00) {
+                    homeOdds = (homeOdds - 1) * 100;
+                } else if(homeOdds < 1.99) {
+                    homeOdds = -100 / (homeOdds -1);
+                }
+                if(awayOdds > 2.00) {
+                    awayOdds = (awayOdds - 1) * 100;
+                } else if(awayOdds < 1.99) {
+                     awayOdds = -100 / (awayOdds -1);
+                }
+                //create card
+                // let card = document.querySelector('.card');
+                let card = document.createElement('div');
+                card.classList.add('card');
+                infoCard.append(card);
+                let cardContent = document.createElement('div');
+                cardContent.classList.add('card-content','card-border');
+                card.append(cardContent)
+                //bookmaker tite
+                let bookermakerTitle = document.createElement('h3');
+                cardContent.append(bookermakerTitle);
+                bookermakerTitle.classList.add('bookmaker-title');
+                bookermakerTitle.textContent = bkMakerTitle;
+                //moneyline
+                let moneyLineTitle = document.createElement('h3');
+                cardContent.append(moneyLineTitle);
+                moneyLineTitle.classList.add('money-line-title')
+                moneyLineTitle.textContent = 'MONEYLINE';
+                //home team
+                let homeTeamTitle = document.createElement('h4');
+                cardContent.append(homeTeamTitle);
+                homeTeamTitle.classList.add('home-team-title')
+                homeTeamTitle.textContent = homeTeam;
+                console.log(homeTeam)
+                // away team
+                let awayTeamTitle = document.createElement('h4');
+                cardContent.append(awayTeamTitle);
+                awayTeamTitle.classList.add('away-team-title')
+                awayTeamTitle.textContent = awayTeam;
+                //home team odds
+                let homeTeamOdds = document.createElement('h4');
+                cardContent.append(homeTeamOdds);
+                homeTeamOdds.classList.add('home-team-odds')
+                homeTeamOdds.textContent = parseInt(homeOdds);
+                // away team odds
+                let awayTeamOdds = document.createElement('h4');
+                cardContent.append(awayTeamOdds);
+                awayTeamOdds.classList.add('away-team-odds')
+                awayTeamOdds.textContent = parseInt(awayOdds);
+            }
+            
+        })
     };
-  
 
-console.log(draftKingsMoneyline());
 
-// build card
 
-function createCard(bookmaker,homeTeam,homeOdds,awayTeam,awayOdds){
-    //create card info wrapper
-    let card = document.querySelector('.card');
-    let cardContent = document.createElement('div');
-    cardContent.classList.add('card-content');
-    card.append(cardContent)
-    //creating bookmaker title - arugments come from api function call
-
-    let bookermakerTitle = document.createElement('h3');
-    cardContent.append(bookermakerTitle);
-    bookermakerTitle.classList.add('bookmaker-title');
-    bookermakerTitle.textContent = bookmaker;
-    //create moneyline title
-
-    let moneyLineTitle = document.createElement('h3');
-    cardContent.append(moneyLineTitle);
-    moneyLineTitle.classList.add('money-line-title')
-    moneyLineTitle.textContent = 'MONEYLINE';
-
-    //create home team title
-
-    let homeTeamTitle = document.createElement('h4');
-    cardContent.append(homeTeamTitle);
-    homeTeamTitle.classList.add('home-team-title')
-    homeTeamTitle.textContent = homeTeam;
-
-    //create home team odds
-
-    let homeTeamOdds = document.createElement('h4');
-    cardContent.append(homeTeamOdds);
-    homeTeamOdds.classList.add('home-team-odds')
-    homeTeamOdds.textContent = homeOdds;
-
-    //away team title
-
-    let awayTeamTitle = document.createElement('h4');
-    cardContent.append(awayTeamTitle);
-    awayTeamTitle.classList.add('away-team-title')
-    awayTeamTitle.textContent = awayTeam;
-
-    //home team odds
-    let awayTeamOdds = document.createElement('h4');
-    cardContent.append(awayTeamOdds);
-    awayTeamOdds.classList.add('away-team-odds')
-    awayTeamOdds.textContent = awayOdds;  
-}
-
-getOdds.addEventListener('click', function(){
-    createCard('Draft Kings','Dallas Cowboys', -240,'New York Giants', 175);
-    createCard('Fan Dual','Oakland Raiders', 140,'Denver Broncos', -200);
-    
+// button clicks
+getDraftkings.addEventListener('click', function(){
+    createCard('draftkings'); 
 })
+getFanduel.addEventListener('click', function(){
+    createCard('fanduel');
+})
+getBetMgm.addEventListener('click', function(){
+    
+    createCard('betmgm');
+})
+// TESTING ------------------------------------------------------------------------------------
+
+// console.log(createCard('draftkings'))
+// console.log('----------------------------------------------------')
 

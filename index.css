@@ -80,7 +80,8 @@
     align-items: center;
 }
 
-.get-data {
+
+.btn-style {
     width: 100px;
     height: 28px;
     padding: 3px;
@@ -100,9 +101,9 @@
     padding: 10px;
 }
 
-.card-has-data {
+.card-border {
     border-bottom: 2px solid black;
-    border-top: 2px solid black;
+    /* border-top: 2px solid black; */
 }
 
 .card-content {
